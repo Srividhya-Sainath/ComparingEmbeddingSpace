@@ -3,37 +3,13 @@ import h5py
 import numpy as np
 import yaml
 from sklearn.metrics.pairwise import cosine_similarity
-from helper import load_matrix_from_h5, TOPk
+from helper import load_matrix_from_h5, TOPk , file_contains_key, setup_logger, load_config
 import torch
 from tqdm import tqdm
 import logging
 import argparse
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-def setup_logger(log_file_path):
-    logger = logging.getLogger('KernelProcessingLogger')
-    logger.setLevel(logging.INFO)
-    f_handler = logging.FileHandler(log_file_path)
-    f_handler.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    f_handler.setFormatter(formatter)
-    logger.addHandler(f_handler)
-    
-    return logger
-
-def load_config(config_path):
-    with open(config_path, 'r') as file:
-        config = yaml.safe_load(file)
-    return config
-
-def file_contains_key(filepath, key):
-    """ Check if the h5 file contains the specified key """
-    if os.path.exists(filepath):
-        with h5py.File(filepath, 'r') as hf:
-            if key in hf.keys():
-                return True
-    return False
 
 def save_data_kernel(feature_paths, output_base_directory, k_list, logger):
     for feature_path in tqdm(feature_paths, desc="Processing models", unit="file"):
